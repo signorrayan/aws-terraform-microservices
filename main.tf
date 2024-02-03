@@ -504,3 +504,9 @@ resource "aws_ssm_parameter" "api_host" {
   type  = "String"
   value = aws_lb.main.*.dns_name[0]
 }
+
+# Create a CloudWatch log group.
+resource "aws_cloudwatch_log_group" "ecs_logs" {
+  name              = "ecs-logs"
+  retention_in_days = 3
+}

@@ -315,6 +315,85 @@ resource "aws_ecs_task_definition" "content" {
 }
 
 
+# ECS Service for FastAPI
+# A service specifies the desired number of instances (replicas) of the task definition to simultaneously run on the cluster.
+resource "aws_ecs_service" "fastapi" {
+  name            = "${var.general_name}-fastapi-service"
+  cluster         = aws_ecs_cluster.my_cluster.id
+  task_definition = aws_ecs_task_definition.fastapi.arn
+  desired_count   = var.fastapi_desired_count
+  launch_type     = "FARGATE"
+  network_configuration {
+    subnets         = module.pagopa_pr_api_ms_vpc.private_subnets
+    security_groups = [aws_security_group.ecs_sg.id]
+  }
+  depends_on = [aws_lb_listener.alb_listener]
+  load_balancer {
+    container_name   = "pagopa_pr_fastapi"
+    container_port   = 8000
+    target_group_arn = aws_lb_target_group.ecs_rest_api_tg.arn
+  }
+}
+
+# ECS Service
+resource "aws_ecs_service" "authentication" {
+  name            = "${var.general_name}-authentication-service"
+  cluster         = aws_ecs_cluster.my_cluster.id
+  task_definition = aws_ecs_task_definition.authentication.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  depends_on      = [aws_lb_listener.alb_listener, aws_ecs_service.fastapi]
+
+  network_configuration {
+    subnets         = module.pagopa_pr_api_ms_vpc.private_subnets
+    security_groups = [aws_security_group.ecs_sg.id]
+  }
+  # load_balancer {
+  #   container_name   = "authentication-container"
+  #   container_port   = 8000
+  #   target_group_arn = aws_lb_target_group.ecs_rest_api_tg.arn
+  # }
+}
+
+# ECS Service for Authorization and Content
+resource "aws_ecs_service" "authorization" {
+  name            = "${var.general_name}-authorization-service"
+  cluster         = aws_ecs_cluster.my_cluster.id
+  task_definition = aws_ecs_task_definition.authorization.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  depends_on      = [aws_lb_listener.alb_listener, aws_ecs_service.fastapi]
+  network_configuration {
+    subnets         = module.pagopa_pr_api_ms_vpc.private_subnets
+    security_groups = [aws_security_group.ecs_sg.id]
+  }
+  # load_balancer {
+  #   container_name   = "authorization-container"
+  #   container_port   = 8000
+  #   target_group_arn = aws_lb_target_group.ecs_rest_api_tg.arn
+  # }
+}
+
+resource "aws_ecs_service" "content" {
+  name            = "${var.general_name}-content-service"
+  cluster         = aws_ecs_cluster.my_cluster.id
+  task_definition = aws_ecs_task_definition.content.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  depends_on      = [aws_lb_listener.alb_listener, aws_ecs_service.fastapi]
+
+  network_configuration {
+    subnets         = module.pagopa_pr_api_ms_vpc.private_subnets
+    security_groups = [aws_security_group.ecs_sg.id]
+  }
+  # load_balancer {
+  #   container_name   = "content-container"
+  #   container_port   = 8000
+  #   target_group_arn = aws_lb_target_group.ecs_rest_api_tg.arn
+  # }
+}
+
+
 # IAM Role for ECS Execution
 resource "aws_iam_role" "ecs_execution_role" {
   name = "${var.general_name}-ecs-execution-role"

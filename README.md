@@ -29,13 +29,19 @@ Before running this Terraform script, make sure you have the following:
 
 3. **Review and modify the `variables.tf` file according to your requirements.**
 
-4. **Apply the Terraform configuration:**
+
+4. Review the configuration and verify that the resources that Terraform is going to create or update match your expectations:
+   ```bash
+   terraform plan
+   ```
+   
+5. **Apply the Terraform configuration:**
 
     ```bash
     terraform apply
     ```
 
-5. **Confirm the changes by typing "yes" when prompted.**
+6. **Confirm the changes by typing "yes" when prompted.**
 
 
 ## Additional Information

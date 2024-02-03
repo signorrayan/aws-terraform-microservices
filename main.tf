@@ -19,3 +19,51 @@ resource "aws_ecr_repository" "authorization" {
 resource "aws_ecr_repository" "content" {
   name = "${var.general_name}-content-service"
 }
+
+resource "docker_image" "fastapi" {
+  name = aws_ecr_repository.fastapi.repository_url
+  build {
+    context    = "${path.module}/microservice-api/api"
+    dockerfile = "Dockerfile"
+  }
+}
+
+resource "docker_image" "authentication" {
+  name = aws_ecr_repository.authentication.repository_url
+  build {
+    context    = "${path.module}/microservice-api/authentication"
+    dockerfile = "Dockerfile"
+  }
+}
+
+resource "docker_image" "authorization" {
+  name = aws_ecr_repository.authorization.repository_url
+  build {
+    context    = "${path.module}/microservice-api/authorization"
+    dockerfile = "Dockerfile"
+  }
+}
+
+resource "docker_image" "content" {
+  name = aws_ecr_repository.content.repository_url
+  build {
+    context    = "${path.module}/microservice-api/content"
+    dockerfile = "Dockerfile"
+  }
+}
+
+resource "docker_registry_image" "fastapi_service" {
+  name = docker_image.fastapi.name
+}
+
+resource "docker_registry_image" "authentication_service" {
+  name = docker_image.authentication.name
+}
+
+resource "docker_registry_image" "authorization_service" {
+  name = docker_image.authorization.name
+}
+
+resource "docker_registry_image" "content_service" {
+  name = docker_image.content.name
+}

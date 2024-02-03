@@ -7,6 +7,6 @@ idna==2.10
 pydantic==1.7.3
 requests==2.25.1
 starlette==0.13.6
-urllib3==1.26.3
+urllib3==1.26.18
 uvicorn==0.13.3
 vaderSentiment==3.3.2

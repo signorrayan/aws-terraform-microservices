@@ -142,7 +142,8 @@ In this project, AWS Fargate is used for running the ECS services instead of EC2
 
 ## Cleanup
 
-To destroy the created infrastructure, first you should clean the S3 bucket (which contains microservices output files), then run:
+To destroy the created infrastructure, first you should clean the S3 bucket (which contains microservices output files). you can do it using AWS CLI: `aws s3 rm s3://pagopa-pr-api-s3 --recursive`,\
+then run:
 
 ```bash
 terraform destroy

@@ -93,3 +93,31 @@ resource "docker_registry_image" "content_service" {
 resource "aws_ecs_cluster" "my_cluster" {
   name = "${var.general_name}-ecs-cluster"
 }
+
+# Create a security group for the ALB.
+resource "aws_security_group" "ecs_sg" {
+  name        = "ecs-sg"
+  description = "ECS security group for the ALB."
+  vpc_id      = module.pagopa_pr_api_ms_vpc.vpc_id
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 8000
+    to_port     = 8000
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

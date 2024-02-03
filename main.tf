@@ -1,3 +1,24 @@
+# VPC Module
+module "pagopa_pr_api_ms_vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  name                 = "${var.general_name}-vpc"
+  cidr                 = var.vpc_cidr
+  azs                  = var.availability_zone
+  enable_dns_support   = var.vpc_dns_support
+  enable_dns_hostnames = var.vpc_dns_hostnames
+
+  public_subnets  = [var.public_cidr_1, var.public_cidr_2]
+  private_subnets = [var.private_cidr_1, var.private_cidr_2]
+
+  enable_nat_gateway = true
+  create_igw         = true
+
+  tags = {
+    Name = "${var.general_name}-vpc"
+  }
+}
+
 # Create an s3 bucket that is using in python scripts to save their output
 resource "aws_s3_bucket" "logs_bucket" {
   bucket = "pr-microservices-logs-mhmdrza" # Change this to your desired bucket name
@@ -67,3 +88,4 @@ resource "docker_registry_image" "authorization_service" {
 resource "docker_registry_image" "content_service" {
   name = docker_image.content.name
 }
+

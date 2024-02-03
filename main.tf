@@ -163,6 +163,158 @@ resource "aws_lb_listener" "alb_listener" {
   }
 }
 
+# ECS Task Definition for FastAPI
+resource "aws_ecs_task_definition" "fastapi" {
+  family                   = "fastapi-service"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+
+  execution_role_arn = aws_iam_role.ecs_execution_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "pagopa_pr_fastapi"
+      image = "${aws_ecr_repository.fastapi.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+        }
+      ],
+      environment = [
+        {
+          name  = "API_HOST"
+          value = aws_ssm_parameter.api_host.value
+        },
+      ],
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs_logs.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "fastapi-container"
+        }
+      }
+    },
+  ])
+}
+
+# ECS Task Definitions for Authentication
+resource "aws_ecs_task_definition" "authentication" {
+  family                   = "authentication-service"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+
+  execution_role_arn = aws_iam_role.ecs_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_s3_access_role.arn
+  depends_on         = [aws_lb.main]
+  container_definitions = jsonencode([
+    {
+      name  = "authentication-container"
+      image = "${aws_ecr_repository.authentication.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+        }
+      ],
+      environment = [
+        {
+          name  = "API_HOST"
+          value = aws_ssm_parameter.api_host.value
+        },
+      ],
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs_logs.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "authentication-container"
+        }
+      }
+    },
+  ])
+}
+
+# ECS Task Definitions for Authorization
+resource "aws_ecs_task_definition" "authorization" {
+  family                   = "authorization-service"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+
+  execution_role_arn = aws_iam_role.ecs_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_s3_access_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "authorization-container"
+      image = "${aws_ecr_repository.authorization.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+        }
+      ],
+      environment = [
+        {
+          name  = "API_HOST"
+          value = aws_ssm_parameter.api_host.value
+        },
+      ],
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs_logs.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "authorization-container"
+        }
+      }
+    },
+  ])
+}
+
+# ECS Task Definitions for  Content
+resource "aws_ecs_task_definition" "content" {
+  family                   = "content-service"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+
+  execution_role_arn = aws_iam_role.ecs_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_s3_access_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "content-container"
+      image = "${aws_ecr_repository.content.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+        }
+      ],
+      environment = [
+        {
+          name  = "API_HOST"
+          value = aws_ssm_parameter.api_host.value
+        },
+      ],
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs_logs.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "content-container"
+        }
+      }
+    },
+  ])
+}
+
+
 # IAM Role for ECS Execution
 resource "aws_iam_role" "ecs_execution_role" {
   name = "${var.general_name}-ecs-execution-role"

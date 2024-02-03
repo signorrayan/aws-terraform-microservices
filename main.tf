@@ -21,7 +21,7 @@ module "pagopa_pr_api_ms_vpc" {
 
 # Create an s3 bucket that is using in python scripts to save their output
 resource "aws_s3_bucket" "logs_bucket" {
-  bucket = "pr-microservices-logs-mhmdrza" # Change this to your desired bucket name
+  bucket = var.s3_output_bucket # Change this to your desired bucket name
 }
 
 # ECR Repositories

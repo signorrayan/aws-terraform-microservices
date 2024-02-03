@@ -102,3 +102,8 @@ variable "fastapi_desired_count" {
   type        = number
   default     = 1
 }
+
+variable "s3_output_bucket" {
+  description = "S3 bucket for the output of the microservices"
+  type        = string
+  default     = "pagopa-pr-api-s3"

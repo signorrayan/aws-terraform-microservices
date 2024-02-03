@@ -510,3 +510,39 @@ resource "aws_cloudwatch_log_group" "ecs_logs" {
   name              = "ecs-logs"
   retention_in_days = 3
 }
+
+# Create a CloudWatch alarm for ECS service Memory scale out.
+resource "aws_cloudwatch_metric_alarm" "ecs_fastapi_memory_scale_out_alarm" {
+  alarm_name          = "${var.general_name}-memory-ScaleOut"
+  alarm_description   = "Alarm if Memory utilization is greater than 60% of reserved Memory"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "MemoryUtilization"
+  namespace           = "AWS/ECS"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 60
+  unit                = "Percent"
+
+  dimensions = {
+    ClusterName = aws_ecs_cluster.my_cluster.name
+    ServiceName = "${var.general_name}-fastapi-service"
+  }
+}
+
+# Create a CloudWatch alarm for ECS service CPU scale out.
+resource "aws_cloudwatch_metric_alarm" "ecs_fastapi_cpu_scale_out_alarm" {
+  alarm_name          = "CPU utilization greater than 50%"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "50"
+  alarm_description   = "Alarm if CPU utilization is greater than 50% of reserved CPU"
+  dimensions = {
+    "Name"  = "ClusterName"
+    "Value" = aws_ecs_cluster.my_cluster.name
+  }
+}

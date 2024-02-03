@@ -107,3 +107,4 @@ variable "s3_output_bucket" {
   description = "S3 bucket for the output of the microservices"
   type        = string
   default     = "pagopa-pr-api-s3"
+}

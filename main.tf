@@ -267,3 +267,9 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_attachment" {
   policy_arn = aws_iam_policy.ecs_execution_policy.arn
   role       = aws_iam_role.ecs_execution_role.name
 }
+
+resource "aws_ssm_parameter" "api_host" {
+  name  = "/pr_microservices/API_HOST"
+  type  = "String"
+  value = aws_lb.main.*.dns_name[0]
+}

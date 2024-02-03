@@ -1,0 +1,48 @@
+name: InfrastructureRelease
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "+([0-9])?(.{+([0-9]),x}).x"
+      - main
+    paths:
+      - '**/*.tpl'
+      - '**/*.py'
+      - '**/*.tf'
+      - '.github/workflows/release.yml'
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+
+    # Skip running release workflow on forks
+    if: github.repository_owner == 'signorrayan'
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8
+        with:
+          node-version: lts/*
+
+      - run: cp .github/.releaserc.yml .
+      - run: npm i -g semantic-release @semantic-release/changelog @semantic-release/git
+      - run: semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      # - run: npm ci
+      # - run: npm audit signatures
+      # - run: npx semantic-release@21.0.2
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

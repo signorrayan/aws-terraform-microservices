@@ -162,3 +162,108 @@ resource "aws_lb_listener" "alb_listener" {
     type             = "forward"
   }
 }
+
+# IAM Role for ECS Execution
+resource "aws_iam_role" "ecs_execution_role" {
+  name = "${var.general_name}-ecs-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = ["ecs.amazonaws.com", "ecs-tasks.amazonaws.com"], # "ec2.amazonaws.com"
+        },
+      },
+    ],
+  })
+}
+
+# IAM Policy for ECS Execution Role
+resource "aws_iam_policy" "ecs_execution_policy" {
+  name        = "${var.general_name}-ecs-execution-policy"
+  description = "Policy for ECS Execution Role"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+          "elasticloadbalancing:DeregisterTargets",
+          "elasticloadbalancing:DescribeTargetGroups",
+          "elasticloadbalancing:DescribeTargetHealth",
+          "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+          "elasticloadbalancing:RegisterTargets",
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer", # Action for pulling images
+          "ecr:BatchGetImage",
+          "ecs:DescribeServices",
+          "ecs:UpdateService",
+          "cloudwatch:PutMetricAlarm",
+          "cloudwatch:DescribeAlarms",
+          "cloudwatch:DeleteAlarms",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ],
+        Resource = "*" #should be tuned to specific resources.
+      },
+    ],
+  })
+}
+
+# Create an IAM Policy for S3 Access
+resource "aws_iam_policy" "ecs_s3_access_policy" {
+  name        = "${var.general_name}-ecs-s3-access-policy"
+  description = "IAM policy for ECS tasks to access S3"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket"
+        ],
+        Resource = "*" # For the S3 bucket
+      },
+    ],
+  })
+}
+
+# Create an IAM Role for ECS S3 Access
+resource "aws_iam_role" "ecs_s3_access_role" {
+  name = "ecs-s3-access-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com",
+        },
+      },
+    ],
+  })
+}
+
+# Attach IAM Policy to ECS S3 Access Role
+resource "aws_iam_role_policy_attachment" "ecs_s3_access_attachment" {
+  policy_arn = aws_iam_policy.ecs_s3_access_policy.arn
+  role       = aws_iam_role.ecs_s3_access_role.name
+}
+
+
+# Attach Policy to ECS Execution Role
+resource "aws_iam_role_policy_attachment" "ecs_execution_attachment" {
+  policy_arn = aws_iam_policy.ecs_execution_policy.arn
+  role       = aws_iam_role.ecs_execution_role.name
+}

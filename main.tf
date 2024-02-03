@@ -89,3 +89,7 @@ resource "docker_registry_image" "content_service" {
   name = docker_image.content.name
 }
 
+# ECS Cluster
+resource "aws_ecs_cluster" "my_cluster" {
+  name = "${var.general_name}-ecs-cluster"
+}

@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/signorrayan/aws-terraform-microservices/compare/v1.0.0...v1.1.0) (2024-02-03)
+
+
+### Bug Fixes
+
+* **s3_bucket:** Created s3_output_bucket variable. ([d427712](https://github.com/signorrayan/aws-terraform-microservices/commit/d42771244c2323845d2d672cb00965ea988c094f))
+
+
+### Features
+
+* **microservices:** Added microservices directory. ([0fc931b](https://github.com/signorrayan/aws-terraform-microservices/commit/0fc931b0bb257d287a2c1b50ad77bec0c5d07bbc))
+
 # 1.0.0 (2024-02-03)
 
 

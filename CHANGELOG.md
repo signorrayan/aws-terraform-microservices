@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/signorrayan/aws-terraform-microservices/compare/v1.1.0...v1.1.1) (2024-02-03)
+
+
+### Bug Fixes
+
+* **variables:** Fixed syntax error in variables.tf ([425631e](https://github.com/signorrayan/aws-terraform-microservices/commit/425631eb7346b6eee62f315e71be8bf1734872c4))
+
 # [1.1.0](https://github.com/signorrayan/aws-terraform-microservices/compare/v1.0.0...v1.1.0) (2024-02-03)
 
 

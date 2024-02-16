@@ -9,8 +9,7 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1009.87)">
 <title>MicroservicesArchitecture</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-1009.87 1062,-1009.87 1062,4 -4,4"/>
-<text text-anchor="middle" x="529" y="-990.67" font-family="Times,serif" font-size="14.00">PagoPA Terraform implementation of infrastructure for microservices on AWS</text>
-<text text-anchor="middle" x="529" y="-975.67" font-family="Times,serif" font-size="14.00">Mohammadreza Sarayloo (github.com/signorrayan)</text>
+<text text-anchor="middle" x="529" y="-975.67" font-family="Times,serif" font-size="14.00">GitHub: github.com/signorrayan</text>
 <g id="clust1" class="cluster">
 <title>cluster_Internet</title>
 <path fill="none" stroke="black" d="M285,-820.87C285,-820.87 471,-820.87 471,-820.87 477,-820.87 483,-826.87 483,-832.87 483,-832.87 483,-947.87 483,-947.87 483,-953.87 477,-959.87 471,-959.87 471,-959.87 285,-959.87 285,-959.87 279,-959.87 273,-953.87 273,-947.87 273,-947.87 273,-832.87 273,-832.87 273,-826.87 279,-820.87 285,-820.87"/>

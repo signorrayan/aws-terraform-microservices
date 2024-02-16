@@ -2,7 +2,7 @@
 
 This Terraform script automates the setup of AWS infrastructure for deploying microservices using Amazon Elastic Container Service (ECS). The deployment includes critical AWS resources like Amazon VPC, subnets, NAT gateways, ECR repositories, ECS clusters, an Application Load Balancer (ALB), and CloudWatch logs.
 
-![Architecture Diagram](./assets/arch.svg)
+![Infra Architecture Diagram](./assets/arch.svg)
 
 ## Prerequisites
 
